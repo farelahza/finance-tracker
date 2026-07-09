@@ -15,7 +15,7 @@ class CategorySeeder extends Seeder
             'Hiburan',
             'Gaji',
             'Tagihan',
-            'Pengeluaran Tak Terhingga 💸'
+            'Pengeluaran Tak Terduga'
         ];
 
         foreach ($categories as $category) {

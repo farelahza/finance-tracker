@@ -20,7 +20,7 @@ return new class extends Migration
 
         $table->enum('type', ['income', 'expense']);
 
-        $table->decimal('amount', 12, 2);
+        $table->unsignedBigInteger('amount');
 
         $table->text('description')->nullable();
 
