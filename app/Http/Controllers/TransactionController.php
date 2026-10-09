@@ -5,18 +5,68 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\TransactionsExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TransactionController extends Controller
 {
-   public function index()
+  public function index(Request $request)
 {
-    $transactions = Transaction::where('user_id', auth()->id())
-        ->with('category')
-        ->latest()
-        ->get();
+    $transactions = Transaction::where('user_id', auth()->id());
 
-    return view('transactions.index', compact('transactions'));
+    if ($request->filled('transaction_date')) {
+        $transactions->whereDate(
+            'transaction_date',
+            $request->transaction_date
+        );
+    }
+
+    if ($request->filled('category_id')) {
+        $transactions->where(
+            'category_id',
+            $request->category_id
+        );
+    }
+
+    if ($request->filled('type')) {
+        $transactions->where(
+            'type',
+            $request->type
+        );
+    }
+
+    if ($request->amount_filter == 'under_100') {
+    $transactions->where('amount', '<', 100000);
+}
+
+if ($request->amount_filter == '100_500') {
+    $transactions->whereBetween('amount', [100000, 500000]);
+}
+
+if ($request->amount_filter == '500_1000') {
+    $transactions->whereBetween('amount', [500000, 1000000]);
+}
+
+if ($request->amount_filter == 'above_1000') {
+    $transactions->where('amount', '>', 1000000);
+}
+
+   $transactions = $transactions
+    ->latest()
+    ->paginate(10)
+    ->withQueryString();
+
+    $categories = Category::all();
+
+    return view(
+        'transactions.index',
+        compact(
+            'transactions',
+            'categories'
+        )
+    );
 }
 
 
@@ -113,11 +163,14 @@ public function dashboard(Request $request)
 
     $balance = $totalIncome - $totalExpense;
 
-    // Data grafik 12 bulan
+    // ======================
+    // Grafik batang tahunan
+    // ======================
     $monthlyIncome = [];
     $monthlyExpense = [];
 
     for ($i = 1; $i <= 12; $i++) {
+
         $monthlyIncome[] = Transaction::where('user_id', auth()->id())
             ->whereYear('transaction_date', $year)
             ->whereMonth('transaction_date', $i)
@@ -131,6 +184,33 @@ public function dashboard(Request $request)
             ->sum('amount');
     }
 
+    // ======================
+    // Pie Chart Kategori
+    // ======================
+    $expenseByCategory = Transaction::join(
+            'categories',
+            'transactions.category_id',
+            '=',
+            'categories.id'
+        )
+        ->select(
+            'categories.name',
+            DB::raw('SUM(transactions.amount) as total')
+        )
+        ->where('transactions.user_id', auth()->id())
+        ->where('transactions.type', 'expense')
+        ->whereMonth('transactions.transaction_date', $month)
+        ->whereYear('transactions.transaction_date', $year)
+        ->groupBy('categories.name')
+        ->get();
+
+    $categoryLabels = $expenseByCategory->pluck('name')->toArray();
+
+    $categoryTotals = $expenseByCategory
+        ->pluck('total')
+        ->map(fn($value) => (float)$value)
+        ->toArray();
+
     return view('dashboard', compact(
         'totalIncome',
         'totalExpense',
@@ -138,8 +218,56 @@ public function dashboard(Request $request)
         'month',
         'year',
         'monthlyIncome',
-        'monthlyExpense'
+        'monthlyExpense',
+        'categoryLabels',
+        'categoryTotals'
     ));
+ }
+
+ public function exportPdf(Request $request)
+{
+    $month = $request->month ?? now()->month;
+    $year = $request->year ?? now()->year;
+
+    $transactions = Transaction::where('user_id', auth()->id())
+        ->whereMonth('transaction_date', $month)
+        ->whereYear('transaction_date', $year)
+        ->with('category')
+        ->get();
+
+    $totalIncome = $transactions
+        ->where('type', 'income')
+        ->sum('amount');
+
+    $totalExpense = $transactions
+        ->where('type', 'expense')
+        ->sum('amount');
+
+    $balance = $totalIncome - $totalExpense;
+
+    $pdf = Pdf::loadView(
+        'reports.finance-pdf',
+        compact(
+            'transactions',
+            'month',
+            'year',
+            'totalIncome',
+            'totalExpense',
+            'balance'
+        )
+    );
+
+    return $pdf->download(
+        "laporan-keuangan-$month-$year.pdf"
+    );
 }
 
+public function export()
+{
+    return Excel::download(
+        new TransactionsExport,
+        'laporan-keuangan.xlsx'
+    );
 }
+
+ }
