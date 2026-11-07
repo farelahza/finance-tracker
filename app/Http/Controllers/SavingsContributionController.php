@@ -45,7 +45,7 @@ class SavingsContributionController extends Controller
         return redirect()
             ->route('savings-goals.show', $goal->id)
             ->with('success', $reachedNow
-                ? 'Progres tersimpan. Selamat, target tabunganmu tercapai! 🎉'
+                ? 'Progres tersimpan. Selamat, target tabunganmu tercapai!'
                 : 'Progres tabungan berhasil ditambahkan.');
     }
 

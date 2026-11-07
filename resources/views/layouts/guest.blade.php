@@ -17,8 +17,16 @@
     <body class="font-sans antialiased text-[#2A210B]">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-[#EDCF72] via-[#DDB84A] to-[#C29B2E]">
             <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-[#2A210B]" />
+                <a href="/" class="flex items-center gap-3" aria-label="Finance Tracker">
+                    <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#14213D] to-[#233763] shadow-lg shadow-[#14213D]/30">
+                        <svg class="h-7 w-7 text-[#F0D27A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M3 17l5-5 4 4 8-8" />
+                            <path d="M15 8h5v5" />
+                        </svg>
+                    </span>
+                    <span class="font-['Playfair_Display',serif] text-2xl font-semibold tracking-tight text-[#2A210B]">
+                        Finance Tracker
+                    </span>
                 </a>
             </div>
 

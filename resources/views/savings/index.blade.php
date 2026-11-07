@@ -25,7 +25,7 @@
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h1 class="font-['Playfair_Display',serif] text-3xl sm:text-4xl font-semibold tracking-tight {{ $title }}">
-                    🎯 Target Tabungan
+                    Target Tabungan
                 </h1>
                 <p class="mt-1 text-sm {{ $muted }}">
                     Catat progres tabungan impianmu. Tidak memengaruhi saldo dan transaksi utama.
@@ -34,7 +34,7 @@
 
             <a href="{{ route('savings-goals.create') }}"
                class="inline-flex items-center justify-center gap-2 self-start sm:self-auto rounded-xl px-5 py-2.5 text-sm font-semibold transition {{ $btnPrimary }}">
-                ➕ Tambah Target
+                <x-icon name="plus" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Tambah Target
             </a>
         </div>
 
@@ -42,7 +42,7 @@
         @if(session('success'))
             <div role="status"
                  class="flex items-center gap-3 rounded-xl border border-[#176B50]/30 bg-[#176B50]/10 px-4 py-3 text-sm font-medium text-[#124F3B]">
-                <span aria-hidden="true">✅</span>
+                <span aria-hidden="true"><x-icon name="check-circle" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /></span>
                 <span>{{ session('success') }}</span>
             </div>
         @endif
@@ -51,7 +51,7 @@
 
             {{-- ===== Empty state ===== --}}
             <div class="{{ $card }} px-6 py-16 text-center">
-                <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#14213D] text-4xl shadow-lg" aria-hidden="true">🎯</div>
+                <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#14213D] text-4xl text-[#F0D27A] shadow-lg" aria-hidden="true"><x-icon name="target" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /></div>
                 <h2 class="mt-6 font-['Playfair_Display',serif] text-2xl font-semibold {{ $title }}">
                     Belum ada target tabungan
                 </h2>
@@ -61,7 +61,7 @@
                 </p>
                 <a href="{{ route('savings-goals.create') }}"
                    class="mt-6 inline-flex items-center justify-center gap-2 rounded-xl px-6 py-2.5 text-sm font-semibold transition {{ $btnPrimary }}">
-                    ➕ Buat Target Pertama
+                    <x-icon name="plus" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Buat Target Pertama
                 </a>
             </div>
 
@@ -73,21 +73,21 @@
                 <div class="rounded-2xl border border-[#E3BE5B]/60 p-5 shadow-xl shadow-[#14213D]/30
                             bg-gradient-to-br from-[#14213D] via-[#1B2B52] to-[#233763]">
                     <p class="text-sm font-semibold text-[#D9C99A]">Total Terkumpul</p>
-                    <p class="mt-3 font-['Playfair_Display',serif] text-2xl font-semibold text-[#F0D27A] break-words">
+                    <p class="mt-3 tabular-nums text-2xl font-bold text-[#F0D27A] break-words">
                         {{ $rp($totalSaved) }}
                     </p>
                 </div>
 
                 <div class="{{ $card }} p-5">
                     <p class="text-sm font-medium {{ $muted }}">Total Target</p>
-                    <p class="mt-3 font-['Playfair_Display',serif] text-2xl font-semibold {{ $title }} break-words">
+                    <p class="mt-3 tabular-nums text-2xl font-bold {{ $title }} break-words">
                         {{ $rp($totalTarget) }}
                     </p>
                 </div>
 
                 <div class="{{ $card }} p-5">
                     <p class="text-sm font-medium {{ $muted }}">Target Tercapai</p>
-                    <p class="mt-3 font-['Playfair_Display',serif] text-2xl font-semibold text-[#176B50]">
+                    <p class="mt-3 tabular-nums text-2xl font-bold text-[#176B50]">
                         {{ $achievedCount }} <span class="text-base font-medium {{ $muted }}">dari {{ $goals->count() }} target</span>
                     </p>
                 </div>
@@ -109,11 +109,11 @@
 
                             @if($done)
                                 <span class="shrink-0 rounded-full bg-[#176B50]/15 px-3 py-1 text-xs font-semibold text-[#176B50]">
-                                    ✅ Tercapai
+                                    <x-icon name="check-circle" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Tercapai
                                 </span>
                             @else
                                 <span class="shrink-0 rounded-full bg-[#14213D]/10 px-3 py-1 text-xs font-semibold text-[#14213D]">
-                                    ⏳ Berjalan
+                                    <x-icon name="clock" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Berjalan
                                 </span>
                             @endif
                         </div>
@@ -121,7 +121,7 @@
                         <div class="mt-4 flex items-end justify-between gap-3">
                             <div class="min-w-0">
                                 <p class="text-xs {{ $muted }}">Terkumpul</p>
-                                <p class="font-['Playfair_Display',serif] text-xl font-semibold {{ $title }} break-words">
+                                <p class="tabular-nums text-xl font-bold {{ $title }} break-words">
                                     {{ $rp($goal->saved_amount) }}
                                 </p>
                             </div>
@@ -149,7 +149,7 @@
                                 <div class="flex justify-between gap-3">
                                     <dt class="{{ $muted }}">Deadline</dt>
                                     <dd class="font-semibold {{ $goal->is_overdue ? 'text-[#8E2740]' : $title }}">
-                                        📅 {{ $goal->deadline->format('d M Y') }}
+                                        <x-icon name="calendar" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> {{ $goal->deadline->format('d M Y') }}
                                         @if($goal->is_overdue) <span class="text-xs">(lewat)</span> @endif
                                     </dd>
                                 </div>

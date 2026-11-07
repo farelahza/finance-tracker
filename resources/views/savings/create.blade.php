@@ -11,7 +11,7 @@
 
         <div>
             <h1 class="font-['Playfair_Display',serif] text-3xl sm:text-4xl font-semibold tracking-tight {{ $title }}">
-                ➕ Tambah Target Tabungan
+                Tambah Target Tabungan
             </h1>
             <p class="mt-1 text-sm {{ $muted }}">Progres awal otomatis Rp 0. Kamu bisa mencatat tabungan setelah target dibuat.</p>
         </div>
@@ -21,7 +21,7 @@
                 'goal'        => null,
                 'action'      => route('savings-goals.store'),
                 'method'      => 'POST',
-                'submitLabel' => '💾 Simpan Target',
+                'submitLabel' => 'Simpan Target',
                 'cancelUrl'   => route('savings-goals.index'),
             ])
         </div>

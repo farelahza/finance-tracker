@@ -48,28 +48,23 @@
 
             <div>
                 <h1 class="font-['Playfair_Display',serif] text-3xl sm:text-4xl font-semibold tracking-tight {{ $title }}">
-                    📋 Daftar Transaksi
+                    Daftar Transaksi
                 </h1>
                 <p class="mt-1 text-sm {{ $muted }}">
                     Kelola semua pemasukan dan pengeluaran kamu
                 </p>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
+            <div class="flex flex-col gap-3 sm:flex-row">
 
                 <a href="{{ route('transactions.export') }}"
                    class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition {{ $btnExcel }}">
-                    📥 Export Excel
-                </a>
-
-                <a href="{{ route('export.pdf') }}"
-                   class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition {{ $btnPdf }}">
-                    📄 Export PDF
+                    <x-icon name="download" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Export Excel
                 </a>
 
                 <a href="{{ route('transactions.create') }}"
-                   class="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-sm transition {{ $btnPrimary }}">
-                    ➕ Tambah Transaksi
+                   class="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-sm transition {{ $btnPrimary }}">
+                    <x-icon name="plus" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Tambah Transaksi
                 </a>
 
             </div>
@@ -80,7 +75,7 @@
             <div role="status"
                  class="flex items-center gap-3 rounded-xl border border-[#176B50]/30 bg-[#176B50]/10
                         px-4 py-3 text-sm font-medium text-[#176B50]">
-                <span aria-hidden="true">✅</span>
+                <span aria-hidden="true"><x-icon name="check-circle" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /></span>
                 <span>{{ session('success') }}</span>
             </div>
         @endif
@@ -91,14 +86,14 @@
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6 lg:items-end">
 
                 <div>
-                    <label for="transaction_date" class="{{ $label }}">📅 Tanggal</label>
+                    <label for="transaction_date" class="{{ $label }}"><x-icon name="calendar" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Tanggal</label>
                     <input id="transaction_date" type="date" name="transaction_date"
                            value="{{ request('transaction_date') }}"
                            class="{{ $field }}">
                 </div>
 
                 <div>
-                    <label for="category_id" class="{{ $label }}">🏷️ Kategori</label>
+                    <label for="category_id" class="{{ $label }}"><x-icon name="tag" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Kategori</label>
                     <select id="category_id" name="category_id" class="{{ $field }}">
                         <option value="">Semua Kategori</option>
                         @foreach($categories as $category)
@@ -111,7 +106,7 @@
                 </div>
 
                 <div>
-                    <label for="type" class="{{ $label }}">🔁 Tipe</label>
+                    <label for="type" class="{{ $label }}"><x-icon name="repeat" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Tipe</label>
                     <select id="type" name="type" class="{{ $field }}">
                         <option value="">Semua Tipe</option>
                         <option value="income" {{ request('type') == 'income' ? 'selected' : '' }}>Pemasukan</option>
@@ -120,7 +115,7 @@
                 </div>
 
                 <div>
-                    <label for="amount_filter" class="{{ $label }}">💰 Jumlah</label>
+                    <label for="amount_filter" class="{{ $label }}"><x-icon name="wallet" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Jumlah</label>
                     <select id="amount_filter" name="amount_filter" class="{{ $field }}">
                         <option value="">Semua Jumlah</option>
                         <option value="under_100" {{ request('amount_filter') == 'under_100' ? 'selected' : '' }}>
@@ -141,7 +136,7 @@
                 <div class="flex gap-3 sm:col-span-2 lg:col-span-2">
                     <button type="submit"
                             class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-sm transition {{ $btnPrimary }}">
-                        🔍 Filter
+                        <x-icon name="search" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Filter
                     </button>
 
                     @if($filterAktif)
@@ -155,8 +150,68 @@
             </div>
         </form>
 
-        {{-- ===== TABLE ===== --}}
-        <div class="overflow-hidden {{ $card }}">
+        {{-- ===== LIST (mobile) ===== --}}
+        <div class="space-y-3 md:hidden">
+            @forelse($transactions as $transaction)
+                <article class="{{ $card }} p-4">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <p class="font-semibold {{ $title }} break-words">{{ $transaction->category->name }}</p>
+                            <p class="mt-0.5 text-xs {{ $muted }}">
+                                {{ \Carbon\Carbon::parse($transaction->transaction_date)->format('d M Y') }}
+                            </p>
+                        </div>
+                        <p class="shrink-0 text-right font-bold tabular-nums
+                                  {{ $transaction->type == 'income' ? 'text-[#176B50]' : 'text-[#8E2740]' }}">
+                            Rp {{ number_format($transaction->amount, 0, ',', '.') }}
+                        </p>
+                    </div>
+
+                    <div class="mt-2.5">
+                        @if($transaction->type == 'income')
+                            <span class="inline-flex items-center gap-1 rounded-full bg-[#176B50]/10 px-3 py-1 text-xs font-semibold text-[#176B50]">
+                                <x-icon name="arrow-up" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Pemasukan
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1 rounded-full bg-[#8E2740]/10 px-3 py-1 text-xs font-semibold text-[#8E2740]">
+                                <x-icon name="arrow-down" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Pengeluaran
+                            </span>
+                        @endif
+                    </div>
+
+                    @if($transaction->description)
+                        <p class="mt-2 text-sm text-[#43340F] break-words">{{ $transaction->description }}</p>
+                    @endif
+
+                    <div class="mt-4 grid grid-cols-2 gap-2">
+                        <a href="{{ route('transactions.edit', $transaction->id) }}"
+                           class="inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition {{ $btnEdit }}">
+                            <x-icon name="pencil" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Edit
+                        </a>
+
+                        <form action="{{ route('transactions.destroy', $transaction->id) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+
+                            <button type="submit"
+                                    onclick="return confirm('Yakin ingin menghapus transaksi ini?')"
+                                    class="inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition {{ $btnPdf }}">
+                                <x-icon name="trash" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Hapus
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            @empty
+                <div class="{{ $card }} px-5 py-12 text-center">
+                    <div class="text-4xl text-[#54421A]" aria-hidden="true"><x-icon name="folder" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /></div>
+                    <p class="mt-3 font-medium {{ $title }}">Belum ada transaksi</p>
+                    <p class="mt-1 text-sm {{ $muted }}">Klik "Tambah Transaksi" untuk mencatat yang pertama.</p>
+                </div>
+            @endforelse
+        </div>
+
+        {{-- ===== TABLE (tablet & desktop) ===== --}}
+        <div class="hidden md:block overflow-hidden {{ $card }}">
 
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[820px] text-sm">
@@ -189,12 +244,12 @@
                                     @if($transaction->type == 'income')
                                         <span class="inline-flex items-center gap-1 rounded-full bg-[#176B50]/10
                                                      px-3 py-1 text-xs font-semibold text-[#176B50]">
-                                            💰 Pemasukan
+                                            <x-icon name="arrow-up" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Pemasukan
                                         </span>
                                     @else
                                         <span class="inline-flex items-center gap-1 rounded-full bg-[#8E2740]/10
                                                      px-3 py-1 text-xs font-semibold text-[#8E2740]">
-                                            💸 Pengeluaran
+                                            <x-icon name="arrow-down" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Pengeluaran
                                         </span>
                                     @endif
                                 </td>
@@ -216,7 +271,7 @@
 
                                         <a href="{{ route('transactions.edit', $transaction->id) }}"
                                            class="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition {{ $btnEdit }}">
-                                            ✏️ Edit
+                                            <x-icon name="pencil" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Edit
                                         </a>
 
                                         <form action="{{ route('transactions.destroy', $transaction->id) }}"
@@ -227,7 +282,7 @@
                                             <button
                                                 onclick="return confirm('Yakin ingin menghapus transaksi ini?')"
                                                 class="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition {{ $btnPdf }}">
-                                                🗑️ Hapus
+                                                <x-icon name="trash" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Hapus
                                             </button>
                                         </form>
 
@@ -238,7 +293,7 @@
                         @empty
                             <tr>
                                 <td colspan="6" class="px-5 py-14 text-center">
-                                    <div class="text-4xl" aria-hidden="true">🗂️</div>
+                                    <div class="text-4xl" aria-hidden="true"><x-icon name="folder" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /></div>
                                     <p class="mt-3 font-medium {{ $title }}">Belum ada transaksi</p>
                                     <p class="mt-1 text-sm {{ $muted }}">
                                         Klik "Tambah Transaksi" untuk mencatat yang pertama.

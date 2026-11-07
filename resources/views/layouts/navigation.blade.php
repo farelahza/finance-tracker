@@ -6,11 +6,18 @@ class="bg-gradient-to-r from-[#14213D] via-[#1B2B52] to-[#14213D] border-b borde
 
             <div class="flex">
 
-                <!-- Logo -->
+                <!-- Brand -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo
-                            class="block h-9 w-auto fill-current text-[#E3BE5B]" />
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3" aria-label="Finance Tracker">
+                        <span class="flex h-9 w-9 items-center justify-center rounded-xl border border-[#E3BE5B]/50 bg-[#E3BE5B]/10">
+                            <svg class="h-5 w-5 text-[#F0D27A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3 17l5-5 4 4 8-8" />
+                                <path d="M15 8h5v5" />
+                            </svg>
+                        </span>
+                        <span class="hidden lg:block font-['Playfair_Display',serif] text-lg font-semibold tracking-tight text-[#F0D27A]">
+                            Finance Tracker
+                        </span>
                     </a>
                 </div>
 
@@ -20,19 +27,19 @@ class="bg-gradient-to-r from-[#14213D] via-[#1B2B52] to-[#14213D] border-b borde
                     <x-nav-link
                         :href="route('dashboard')"
                         :active="request()->routeIs('dashboard')">
-                        📊 Dashboard
+                        <x-icon name="chart" class="h-[1.15em] w-[1.15em] align-[-0.2em] mr-2" /> Dashboard
                     </x-nav-link>
 
                     <x-nav-link
                         :href="route('transactions.index')"
                         :active="request()->routeIs('transactions.*')">
-                        📋 Transaksi
+                        <x-icon name="clipboard" class="h-[1.15em] w-[1.15em] align-[-0.2em] mr-2" /> Transaksi
                     </x-nav-link>
 
                     <x-nav-link
                         :href="route('savings-goals.index')"
                         :active="request()->routeIs('savings-goals.*')">
-                        🎯 Target Tabungan
+                        <x-icon name="target" class="h-[1.15em] w-[1.15em] align-[-0.2em] mr-2" /> Target Tabungan
                     </x-nav-link>
 
                 </div>
@@ -42,36 +49,36 @@ class="bg-gradient-to-r from-[#14213D] via-[#1B2B52] to-[#14213D] border-b borde
             <div class="hidden sm:flex sm:items-center sm:ms-6">
 
                 <!-- Dropdown User -->
-                <x-dropdown align="right" width="48">
+                <x-dropdown align="right" width="w-64">
 
                     <x-slot name="trigger">
                         <button
-                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-[#E6D08A] bg-transparent hover:text-[#F7E4A0] focus:outline-none transition">
+                            class="inline-flex items-center gap-3 rounded-full border border-[#E3BE5B]/40 bg-[#E3BE5B]/10 py-1.5 pl-1.5 pr-3.5 text-sm font-medium text-[#F0D27A] transition hover:bg-[#E3BE5B]/20 focus:outline-none focus:ring-2 focus:ring-[#E3BE5B]/40">
 
-                            <div>{{ Auth::user()->name }}</div>
+                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-b from-[#EBCB68] to-[#A67C1A] text-sm font-bold text-[#2A210B]">
+                                {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
+                            </span>
 
-                            <div class="ms-1">
-                                <svg
-                                    class="fill-current h-4 w-4"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20">
+                            <span class="max-w-[9rem] truncate">{{ Auth::user()->name }}</span>
 
-                                    <path
-                                        fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4
-                                        4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-
+                            <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
                         </button>
                     </x-slot>
 
                     <x-slot name="content">
 
+                        <div class="border-b border-[#BE9A35]/60 px-4 py-3">
+                            <p class="truncate text-sm font-semibold text-[#2A210B]">{{ Auth::user()->name }}</p>
+                            <p class="truncate text-xs text-[#54421A]">{{ Auth::user()->email }}</p>
+                        </div>
+
                         <x-dropdown-link
                             :href="route('profile.edit')">
-                            👤 Profile
+                            <x-icon name="user" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Profile
                         </x-dropdown-link>
 
                         <form method="POST"
@@ -83,7 +90,7 @@ class="bg-gradient-to-r from-[#14213D] via-[#1B2B52] to-[#14213D] border-b borde
                                 onclick="event.preventDefault();
                                 this.closest('form').submit();">
 
-                                🚪 Logout
+                                <x-icon name="logout" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Logout
 
                             </x-dropdown-link>
 
@@ -142,7 +149,7 @@ class="bg-gradient-to-r from-[#14213D] via-[#1B2B52] to-[#14213D] border-b borde
                 :href="route('dashboard')"
                 :active="request()->routeIs('dashboard')">
 
-                📊 Dashboard
+                <x-icon name="chart" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Dashboard
 
             </x-responsive-nav-link>
 
@@ -150,7 +157,7 @@ class="bg-gradient-to-r from-[#14213D] via-[#1B2B52] to-[#14213D] border-b borde
                 :href="route('transactions.index')"
                 :active="request()->routeIs('transactions.*')">
 
-                📋 Transaksi
+                <x-icon name="clipboard" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Transaksi
 
             </x-responsive-nav-link>
 
@@ -158,7 +165,7 @@ class="bg-gradient-to-r from-[#14213D] via-[#1B2B52] to-[#14213D] border-b borde
                 :href="route('savings-goals.index')"
                 :active="request()->routeIs('savings-goals.*')">
 
-                🎯 Target Tabungan
+                <x-icon name="target" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Target Tabungan
 
             </x-responsive-nav-link>
 
@@ -166,13 +173,13 @@ class="bg-gradient-to-r from-[#14213D] via-[#1B2B52] to-[#14213D] border-b borde
 
         <div class="border-t border-[#E3BE5B]/25 pt-4 pb-1">
 
-            <div class="px-4">
-                <div class="font-medium text-base text-[#F0D27A]">
-                    {{ Auth::user()->name }}
-                </div>
-
-                <div class="font-medium text-sm text-[#B9A56B]">
-                    {{ Auth::user()->email }}
+            <div class="flex items-center gap-3 px-4">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-[#EBCB68] to-[#A67C1A] text-base font-bold text-[#2A210B]">
+                    {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
+                </span>
+                <div class="min-w-0">
+                    <div class="truncate font-medium text-base text-[#F0D27A]">{{ Auth::user()->name }}</div>
+                    <div class="truncate font-medium text-sm text-[#B9A56B]">{{ Auth::user()->email }}</div>
                 </div>
             </div>
 
@@ -181,7 +188,7 @@ class="bg-gradient-to-r from-[#14213D] via-[#1B2B52] to-[#14213D] border-b borde
                 <x-responsive-nav-link
                     :href="route('profile.edit')">
 
-                    👤 Profile
+                    <x-icon name="user" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Profile
 
                 </x-responsive-nav-link>
 
@@ -194,7 +201,7 @@ class="bg-gradient-to-r from-[#14213D] via-[#1B2B52] to-[#14213D] border-b borde
                         onclick="event.preventDefault();
                         this.closest('form').submit();">
 
-                        🚪 Logout
+                        <x-icon name="logout" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Logout
 
                     </x-responsive-nav-link>
 

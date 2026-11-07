@@ -17,7 +17,7 @@
     @endif
 
     <div>
-        <label for="name" class="{{ $label }}">🎯 Nama Target <span class="text-[#8E2740]">*</span></label>
+        <label for="name" class="{{ $label }}"><x-icon name="target" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Nama Target <span class="text-[#8E2740]">*</span></label>
         <input id="name" type="text" name="name" maxlength="100" required
                value="{{ old('name', $goal->name ?? '') }}"
                placeholder="Contoh: Laptop Baru, Motor, Liburan"
@@ -26,7 +26,7 @@
     </div>
 
     <div>
-        <label for="target_amount" class="{{ $label }}">💰 Nominal Target (Rp) <span class="text-[#8E2740]">*</span></label>
+        <label for="target_amount" class="{{ $label }}"><x-icon name="wallet" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Nominal Target (Rp) <span class="text-[#8E2740]">*</span></label>
         <input id="target_amount" type="number" name="target_amount" min="1" step="1" inputmode="numeric" required
                value="{{ old('target_amount', $goal->target_amount ?? '') }}"
                placeholder="Contoh: 15000000"
@@ -36,7 +36,7 @@
     </div>
 
     <div>
-        <label for="description" class="{{ $label }}">📝 Deskripsi <span class="text-[#54421A] font-normal">(opsional)</span></label>
+        <label for="description" class="{{ $label }}"><x-icon name="note" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Deskripsi <span class="text-[#54421A] font-normal">(opsional)</span></label>
         <textarea id="description" name="description" rows="3" maxlength="1000"
                   placeholder="Catatan singkat tentang target ini"
                   class="{{ $field }}">{{ old('description', $goal->description ?? '') }}</textarea>
@@ -44,7 +44,7 @@
     </div>
 
     <div>
-        <label for="deadline" class="{{ $label }}">📅 Deadline <span class="text-[#54421A] font-normal">(opsional)</span></label>
+        <label for="deadline" class="{{ $label }}"><x-icon name="calendar" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Deadline <span class="text-[#54421A] font-normal">(opsional)</span></label>
         <input id="deadline" type="date" name="deadline"
                value="{{ old('deadline', optional($goal->deadline ?? null)->format('Y-m-d')) }}"
                class="{{ $field }}">
@@ -58,6 +58,7 @@
         </a>
         <button type="submit"
                 class="inline-flex items-center justify-center gap-2 rounded-xl px-6 py-2.5 text-sm font-semibold transition {{ $btnPrimary }}">
+            <x-icon name="check" class="h-[1.15em] w-[1.15em] align-[-0.2em]" />
             {{ $submitLabel }}
         </button>
     </div>

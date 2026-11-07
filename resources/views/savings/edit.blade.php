@@ -11,7 +11,7 @@
 
         <div>
             <h1 class="font-['Playfair_Display',serif] text-3xl sm:text-4xl font-semibold tracking-tight {{ $title }}">
-                ✏️ Edit Target Tabungan
+                Edit Target Tabungan
             </h1>
             <p class="mt-1 text-sm {{ $muted }}">Mengubah target tidak menghapus riwayat progres yang sudah tercatat.</p>
         </div>
@@ -21,7 +21,7 @@
                 'goal'        => $goal,
                 'action'      => route('savings-goals.update', $goal->id),
                 'method'      => 'PUT',
-                'submitLabel' => '💾 Simpan Perubahan',
+                'submitLabel' => 'Simpan Perubahan',
                 'cancelUrl'   => route('savings-goals.show', $goal->id),
             ])
         </div>
