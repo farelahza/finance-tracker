@@ -15,7 +15,7 @@
     $label = 'mb-1.5 block text-sm font-medium text-[#43340F]';
 
     $field = 'w-full rounded-xl border border-[#A8841F] bg-[#FBF1CC] text-[#2A210B]
-        text-sm py-2.5 pl-3 pr-9 shadow-sm
+        text-base sm:text-sm py-2.5 pl-3 pr-9 shadow-sm
         focus:border-[#B8892B] focus:ring-2 focus:ring-[#B8892B]/30 focus:outline-none transition';
 
     $btnPrimary = 'bg-gradient-to-b from-[#EBCB68] to-[#A67C1A] text-[#2A210B]
@@ -104,11 +104,43 @@
                     </button>
                 </div>
 
-                <div class="flex">
-                    <a href="{{ route('transactions.export') }}"
-                       class="inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition sm:w-auto {{ $btnExcel }}">
+                <div class="relative w-full sm:w-auto" x-data="{ open: false }"
+                     @click.outside="open = false" @keydown.escape.window="open = false">
+
+                    <button type="button" @click="open = !open" aria-haspopup="menu" :aria-expanded="open"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition sm:w-auto {{ $btnExcel }}">
                         <x-icon name="download" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Export Excel
-                    </a>
+                        <svg class="h-4 w-4 fill-current transition-transform" :class="open ? 'rotate-180' : ''"
+                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true">
+                            <path fill-rule="evenodd"
+                                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                  clip-rule="evenodd" />
+                        </svg>
+                    </button>
+
+                    <div x-show="open" x-transition role="menu" style="display:none"
+                         class="absolute inset-x-0 z-30 mt-2 overflow-hidden rounded-xl border border-[#BE9A35] bg-[#F4E4A6] shadow-xl sm:inset-x-auto sm:right-0 sm:w-72">
+
+                        <a role="menuitem"
+                           href="{{ route('transactions.export', ['scope' => 'month', 'month' => $month, 'year' => $year]) }}"
+                           class="flex items-start gap-3 px-4 py-3 transition hover:bg-[#E8D17F] focus:bg-[#E8D17F] focus:outline-none">
+                            <span class="mt-0.5 text-[#176B50]"><x-icon name="calendar" class="h-5 w-5" /></span>
+                            <span>
+                                <span class="block text-sm font-semibold text-[#2A210B]">Bulan sesuai filter</span>
+                                <span class="block text-xs text-[#54421A]">Hanya transaksi {{ $periode }}</span>
+                            </span>
+                        </a>
+
+                        <a role="menuitem"
+                           href="{{ route('transactions.export', ['scope' => 'year', 'year' => $year]) }}"
+                           class="flex items-start gap-3 border-t border-[#BE9A35]/60 px-4 py-3 transition hover:bg-[#E8D17F] focus:bg-[#E8D17F] focus:outline-none">
+                            <span class="mt-0.5 text-[#176B50]"><x-icon name="chart" class="h-5 w-5" /></span>
+                            <span>
+                                <span class="block text-sm font-semibold text-[#2A210B]">Seluruh tahun {{ $year }}</span>
+                                <span class="block text-xs text-[#54421A]">Semua transaksi Januari - Desember</span>
+                            </span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </form>
@@ -119,7 +151,7 @@
                  class="flex items-start gap-3 rounded-xl border border-[#14213D]/25 bg-[#14213D]/5 px-4 py-3 text-sm text-[#43340F]">
                 <span class="mt-0.5 text-[#14213D]"><x-icon name="info" class="h-5 w-5" /></span>
                 <p>
-                    Belum ada transaksi pada <strong>{{ $periode }}</strong>, jadi angka di bawah masih Rp 0.
+                    Belum ada transaksi pada <strong>{{ $periode }}</strong>, jadi total pemasukan dan pengeluaran masih Rp 0.
                     Pilih bulan lain pada filter, atau
                     <a href="{{ route('transactions.create') }}" class="font-semibold text-[#14213D] underline underline-offset-2">tambah transaksi</a>.
                 </p>
@@ -139,7 +171,7 @@
                 <p class="mt-4 text-3xl font-bold tabular-nums tracking-tight text-[#F0D27A] break-words">
                     Rp {{ number_format($balance, 0, ',', '.') }}
                 </p>
-                <p class="mt-1 text-xs text-[#B9A56B]">Periode {{ $periode }}</p>
+                <p class="mt-1 text-xs text-[#B9A56B]">Akumulasi seluruh transaksi</p>
             </div>
 
             {{-- Pemasukan --}}
@@ -316,7 +348,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         grid: { display: false },
                         ticks: {
                             color: C.text,
-                            font: (ctx) => ({ weight: ctx.index === selectedMonth ? 'bold' : 'normal' })
+                            autoSkip: false,
+                            maxRotation: 0,
+                            font: (ctx) => ({
+                                size: window.innerWidth < 640 ? 10 : 12,
+                                weight: ctx.index === selectedMonth ? 'bold' : 'normal'
+                            })
                         }
                     },
                     y: {

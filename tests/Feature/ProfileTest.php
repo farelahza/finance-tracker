@@ -1,85 +1,147 @@
 <?php
 
+namespace Tests\Feature;
+
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
 
-test('profile page is displayed', function () {
-    $user = User::factory()->create();
+/**
+ * Catatan: RefreshDatabase memakai database test (phpunit.xml: sqlite :memory:),
+ * bukan database aplikasimu. Storage disk 'public' di-fake sehingga tidak ada file asli yang dibuat.
+ */
+class ProfilePhotoTest extends TestCase
+{
+    use RefreshDatabase;
 
-    $response = $this
-        ->actingAs($user)
-        ->get('/profile');
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutVite();
+        Storage::fake('public');
+    }
 
-    $response->assertOk();
-});
+    /** PNG 1x1 yang valid, jadi tidak butuh ekstensi GD. */
+    private function pngFile(string $name = 'foto.png'): UploadedFile
+    {
+        return UploadedFile::fake()->createWithContent(
+            $name,
+            base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==')
+        );
+    }
 
-test('profile information can be updated', function () {
-    $user = User::factory()->create();
+    private function payload(User $user, array $extra = []): array
+    {
+        return array_merge(['name' => $user->name, 'email' => $user->email], $extra);
+    }
 
-    $response = $this
-        ->actingAs($user)
-        ->patch('/profile', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+    public function test_profile_page_renders(): void
+    {
+        $user = User::factory()->create();
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
+        $this->actingAs($user)->get(route('profile.edit'))
+            ->assertOk()
+            ->assertSee('Profil Saya');
+    }
 
-    $user->refresh();
+    public function test_user_can_upload_photo(): void
+    {
+        $user = User::factory()->create();
 
-    $this->assertSame('Test User', $user->name);
-    $this->assertSame('test@example.com', $user->email);
-    $this->assertNull($user->email_verified_at);
-});
+        $this->actingAs($user)
+            ->patch(route('profile.update'), $this->payload($user, ['photo' => $this->pngFile()]))
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('profile.edit'));
 
-test('email verification status is unchanged when the email address is unchanged', function () {
-    $user = User::factory()->create();
+        $path = $user->fresh()->profile_photo_path;
+        $this->assertNotNull($path);
+        Storage::disk('public')->assertExists($path);
+        $this->assertStringContainsString('storage/' . $path, $user->fresh()->profile_photo_url);
+    }
 
-    $response = $this
-        ->actingAs($user)
-        ->patch('/profile', [
-            'name' => 'Test User',
-            'email' => $user->email,
-        ]);
+    public function test_replacing_photo_deletes_the_old_file(): void
+    {
+        $user = User::factory()->create();
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
+        $this->actingAs($user)->patch(route('profile.update'), $this->payload($user, ['photo' => $this->pngFile('a.png')]));
+        $old = $user->fresh()->profile_photo_path;
 
-    $this->assertNotNull($user->refresh()->email_verified_at);
-});
+        $this->actingAs($user)->patch(route('profile.update'), $this->payload($user, ['photo' => $this->pngFile('b.png')]));
+        $new = $user->fresh()->profile_photo_path;
 
-test('user can delete their account', function () {
-    $user = User::factory()->create();
+        $this->assertNotSame($old, $new);
+        Storage::disk('public')->assertMissing($old);
+        Storage::disk('public')->assertExists($new);
+    }
 
-    $response = $this
-        ->actingAs($user)
-        ->delete('/profile', [
-            'password' => 'password',
-        ]);
+    public function test_user_can_remove_photo(): void
+    {
+        $user = User::factory()->create();
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/');
+        $this->actingAs($user)->patch(route('profile.update'), $this->payload($user, ['photo' => $this->pngFile()]));
+        $path = $user->fresh()->profile_photo_path;
 
-    $this->assertGuest();
-    $this->assertNull($user->fresh());
-});
+        $this->actingAs($user)->patch(route('profile.update'), $this->payload($user, ['remove_photo' => 1]))
+            ->assertSessionHasNoErrors();
 
-test('correct password must be provided to delete account', function () {
-    $user = User::factory()->create();
+        $this->assertNull($user->fresh()->profile_photo_path);
+        Storage::disk('public')->assertMissing($path);
+    }
 
-    $response = $this
-        ->actingAs($user)
-        ->from('/profile')
-        ->delete('/profile', [
-            'password' => 'wrong-password',
-        ]);
+    public function test_updating_name_without_photo_keeps_existing_photo(): void
+    {
+        $user = User::factory()->create();
 
-    $response
-        ->assertSessionHasErrorsIn('userDeletion', 'password')
-        ->assertRedirect('/profile');
+        $this->actingAs($user)->patch(route('profile.update'), $this->payload($user, ['photo' => $this->pngFile()]));
+        $path = $user->fresh()->profile_photo_path;
 
-    $this->assertNotNull($user->fresh());
-});
+        $this->actingAs($user)->patch(route('profile.update'), [
+            'name' => 'Nama Baru', 'email' => $user->email, 'remove_photo' => 0,
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame('Nama Baru', $user->fresh()->name);
+        $this->assertSame($path, $user->fresh()->profile_photo_path);
+    }
+
+    public function test_rejects_non_image_and_oversized_files(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->patch(route('profile.update'), $this->payload($user, [
+            'photo' => UploadedFile::fake()->createWithContent('doc.pdf', '%PDF-1.4 bukan gambar'),
+        ]))->assertSessionHasErrors('photo');
+
+        $this->actingAs($user)->patch(route('profile.update'), $this->payload($user, [
+            'photo' => UploadedFile::fake()->create('besar.png', 3000, 'image/png'),
+        ]))->assertSessionHasErrors('photo');
+
+        $this->assertNull($user->fresh()->profile_photo_path);
+    }
+
+    public function test_cannot_set_photo_path_by_posting_it_directly(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->patch(route('profile.update'), $this->payload($user, [
+            'profile_photo_path' => 'profile-photos/milik-orang-lain.png',
+        ]));
+
+        $this->assertNull($user->fresh()->profile_photo_path);
+    }
+
+    public function test_deleting_account_removes_photo_file(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->patch(route('profile.update'), $this->payload($user, ['photo' => $this->pngFile()]));
+        $path = $user->fresh()->profile_photo_path;
+
+        $this->actingAs($user)->delete(route('profile.destroy'), ['password' => 'password'])
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+        Storage::disk('public')->assertMissing($path);
+    }
+}

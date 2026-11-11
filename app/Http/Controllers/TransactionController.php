@@ -161,7 +161,17 @@ public function dashboard(Request $request)
         ->where('type', 'expense')
         ->sum('amount');
 
-    $balance = $totalIncome - $totalExpense;
+    // Saldo = akumulasi SELURUH transaksi user (tidak dibatasi bulan/tahun pada filter).
+    // $totalIncome & $totalExpense di atas tetap mengikuti filter bulan/tahun.
+    $allIncome = Transaction::where('user_id', auth()->id())
+        ->where('type', 'income')
+        ->sum('amount');
+
+    $allExpense = Transaction::where('user_id', auth()->id())
+        ->where('type', 'expense')
+        ->sum('amount');
+
+    $balance = $allIncome - $allExpense;
 
     // ======================
     // Grafik batang tahunan
@@ -262,8 +272,33 @@ public function dashboard(Request $request)
     );
 }
 
-public function export()
+public function export(Request $request)
 {
+    // Tanpa parameter => perilaku lama: ekspor SEMUA transaksi user.
+    $validated = $request->validate([
+        'scope' => 'nullable|in:month,year',
+        'month' => 'nullable|integer|between:1,12',
+        'year'  => 'nullable|integer|between:2000,2100',
+    ]);
+
+    $scope = $validated['scope'] ?? null;
+    $year  = (int) ($validated['year'] ?? now()->year);
+    $month = (int) ($validated['month'] ?? now()->month);
+
+    if ($scope === 'month') {
+        return Excel::download(
+            new TransactionsExport($year, $month),
+            sprintf('laporan-keuangan-%02d-%d.xlsx', $month, $year)
+        );
+    }
+
+    if ($scope === 'year') {
+        return Excel::download(
+            new TransactionsExport($year),
+            "laporan-keuangan-$year.xlsx"
+        );
+    }
+
     return Excel::download(
         new TransactionsExport,
         'laporan-keuangan.xlsx'

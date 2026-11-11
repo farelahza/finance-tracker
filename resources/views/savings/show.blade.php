@@ -6,7 +6,7 @@
     $muted = 'text-[#54421A]';
     $label = 'mb-1.5 block text-sm font-medium text-[#43340F]';
 
-    $field = 'w-full rounded-xl border border-[#A8841F] bg-[#FBF1CC] text-[#2A210B] text-sm px-3 py-2.5 shadow-sm
+    $field = 'w-full rounded-xl border border-[#A8841F] bg-[#FBF1CC] text-[#2A210B] text-base sm:text-sm px-3 py-2.5 shadow-sm
         placeholder:text-[#7A6630] focus:border-[#B8892B] focus:ring-2 focus:ring-[#B8892B]/30 focus:outline-none transition';
     $btnPrimary = 'bg-gradient-to-b from-[#EBCB68] to-[#A67C1A] text-[#2A210B]
         border border-[#8A650F]/60 shadow-md shadow-[#8A650F]/30 hover:brightness-110
@@ -177,7 +177,31 @@
                         <p class="mt-1 text-sm {{ $muted }}">Catat tabungan pertamamu lewat form di samping.</p>
                     </div>
                 @else
-                    <div class="overflow-x-auto">
+                    <ul class="divide-y divide-[#D6BC6A] md:hidden">
+                        @foreach($contributions as $item)
+                            <li class="flex items-start justify-between gap-3 px-5 py-4">
+                                <div class="min-w-0">
+                                    <p class="font-bold tabular-nums text-[#176B50]">+ {{ $rp($item->amount) }}</p>
+                                    <p class="mt-0.5 text-xs text-[#54421A]">{{ $item->saved_at->format('d M Y') }}</p>
+                                    @if($item->note)
+                                        <p class="mt-1 break-words text-sm text-[#43340F]">{{ $item->note }}</p>
+                                    @endif
+                                </div>
+
+                                <form action="{{ route('savings-goals.contributions.destroy', [$goal->id, $item->id]) }}" method="POST" class="shrink-0">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            onclick="return confirm('Yakin ingin menghapus catatan progres ini? Total progres akan dihitung ulang.')"
+                                            class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-semibold transition {{ $btnDanger }}">
+                                        <x-icon name="trash" class="h-4 w-4" /> Hapus
+                                    </button>
+                                </form>
+                            </li>
+                        @endforeach
+                    </ul>
+
+                    <div class="hidden overflow-x-auto md:block">
                         <table class="w-full min-w-[520px] text-sm">
                             <thead class="bg-gradient-to-r from-[#14213D] to-[#233763] text-left font-semibold text-[#F0D27A]">
                                 <tr>

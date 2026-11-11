@@ -121,7 +121,7 @@
                                     <input id="email" type="email" name="email" value="{{ old('email') }}"
                                            required autofocus autocomplete="username" placeholder="nama@email.com"
                                            @error('email') aria-invalid="true" @enderror
-                                           class="block w-full rounded-xl border bg-[#FBF1CC] py-3 pl-11 pr-4 text-sm text-[#2A210B] shadow-sm
+                                           class="block w-full rounded-xl border bg-[#FBF1CC] py-3 pl-11 pr-4 text-base sm:text-sm text-[#2A210B] shadow-sm
                                                   placeholder:text-[#7A6630]/70 transition
                                                   focus:border-[#B8892B] focus:outline-none focus:ring-2 focus:ring-[#B8892B]/30
                                                   {{ $errors->has('email') ? 'border-[#8E2740]' : 'border-[#A8841F]' }}">
@@ -143,7 +143,7 @@
                                     </span>
                                     <input id="password" name="password" required autocomplete="current-password"
                                            :type="show ? 'text' : 'password'" type="password" placeholder="Masukkan kata sandi"
-                                           class="block w-full rounded-xl border border-[#A8841F] bg-[#FBF1CC] py-3 pl-11 pr-12 text-sm text-[#2A210B] shadow-sm
+                                           class="block w-full rounded-xl border border-[#A8841F] bg-[#FBF1CC] py-3 pl-11 pr-12 text-base sm:text-sm text-[#2A210B] shadow-sm
                                                   placeholder:text-[#7A6630]/70 transition
                                                   focus:border-[#B8892B] focus:outline-none focus:ring-2 focus:ring-[#B8892B]/30">
                                     <button type="button" @click="show = !show"

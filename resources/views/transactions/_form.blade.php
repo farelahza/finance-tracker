@@ -6,7 +6,7 @@
     $label = 'mb-1.5 block text-sm font-medium text-[#43340F]';
     $errorText = 'mt-1.5 text-sm font-medium text-[#8E2740]';
 
-    $fieldBase = 'w-full rounded-xl border bg-[#FBF1CC] py-3 text-sm text-[#2A210B] shadow-sm
+    $fieldBase = 'w-full rounded-xl border bg-[#FBF1CC] py-3 text-base sm:text-sm text-[#2A210B] shadow-sm
         placeholder:text-[#7A6630]/70 transition
         focus:border-[#B8892B] focus:outline-none focus:ring-2 focus:ring-[#B8892B]/30';
     $field = fn (string $name) => $fieldBase . ' ' . ($errors->has($name) ? 'border-[#8E2740]' : 'border-[#A8841F]');
@@ -119,7 +119,7 @@
                 <x-icon name="calendar" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Tanggal
             </label>
             <button type="button" @click="setToday()"
-                    class="mb-1.5 rounded text-xs font-semibold text-[#14213D] underline underline-offset-2 hover:text-[#233763]
+                    class="mb-1.5 -mr-2 rounded px-2 py-1 text-xs font-semibold text-[#14213D] underline underline-offset-2 hover:text-[#233763]
                            focus:outline-none focus:ring-2 focus:ring-[#B8892B]/40">
                 Hari ini
             </button>

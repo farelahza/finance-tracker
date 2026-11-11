@@ -1,54 +1,71 @@
-<section class="space-y-6">
-    <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Delete Account') }}
-        </h2>
+@php
+    $bag = $errors->getBag('userDeletion');
+@endphp
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
-        </p>
+<section class="space-y-5">
+    <header class="flex items-start gap-3">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#8E2740]/15 text-[#8E2740]">
+            <x-icon name="alert" class="h-5 w-5" />
+        </span>
+        <div>
+            <h2 class="text-lg font-semibold text-[#8E2740]">Hapus Akun</h2>
+            <p class="mt-0.5 text-sm text-[#54421A]">
+                Setelah akun dihapus, seluruh data dan sumber dayanya akan dihapus permanen. Unduh dulu data yang ingin kamu simpan sebelum melanjutkan.
+            </p>
+        </div>
     </header>
 
-    <x-danger-button
-        x-data=""
-        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-    >{{ __('Delete Account') }}</x-danger-button>
+    <button type="button"
+            x-data=""
+            x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
+            class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#8E2740] px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-[#7A1F36]
+                   focus:outline-none focus:ring-2 focus:ring-[#8E2740]/50 focus:ring-offset-2 focus:ring-offset-[#F4E4A6]">
+        <x-icon name="trash" class="h-4 w-4" />
+        Hapus Akun
+    </button>
 
-    <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
+    <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" max-width="md" focusable>
         <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
             @csrf
             @method('delete')
 
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                {{ __('Are you sure you want to delete your account?') }}
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
-            </p>
-
-            <div class="mt-6">
-                <x-input-label for="password" value="{{ __('Password') }}" class="sr-only" />
-
-                <x-text-input
-                    id="password"
-                    name="password"
-                    type="password"
-                    class="mt-1 block w-3/4"
-                    placeholder="{{ __('Password') }}"
-                />
-
-                <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
+            <div class="flex items-start gap-3">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#8E2740]/15 text-[#8E2740]">
+                    <x-icon name="alert" class="h-5 w-5" />
+                </span>
+                <div>
+                    <h2 class="text-lg font-semibold text-[#2A210B]">Yakin ingin menghapus akun?</h2>
+                    <p class="mt-1 text-sm text-[#54421A]">
+                        Seluruh data akunmu akan dihapus permanen dan tidak bisa dikembalikan.
+                        Masukkan kata sandi untuk mengonfirmasi.
+                    </p>
+                </div>
             </div>
 
-            <div class="mt-6 flex justify-end">
-                <x-secondary-button x-on:click="$dispatch('close')">
-                    {{ __('Cancel') }}
-                </x-secondary-button>
+            <div class="mt-6">
+                <label for="password" class="sr-only">Kata Sandi</label>
+                <input id="password" name="password" type="password" placeholder="Kata sandi"
+                       class="block w-full rounded-xl border bg-[#FBF1CC] px-4 py-3 text-base sm:text-sm text-[#2A210B] shadow-sm placeholder:text-[#7A6630]/70
+                              focus:border-[#B8892B] focus:outline-none focus:ring-2 focus:ring-[#B8892B]/30
+                              {{ $bag->has('password') ? 'border-[#8E2740]' : 'border-[#A8841F]' }}">
+                @if($bag->has('password'))
+                    <p class="mt-1.5 text-sm font-medium text-[#8E2740]">{{ $bag->first('password') }}</p>
+                @endif
+            </div>
 
-                <x-danger-button class="ms-3">
-                    {{ __('Delete Account') }}
-                </x-danger-button>
+            <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button type="button" x-on:click="$dispatch('close')"
+                        class="inline-flex items-center justify-center rounded-xl border border-[#A8841F] bg-[#F4E4A6] px-5 py-2.5 text-sm font-semibold text-[#2A210B] transition hover:bg-[#E8D17F]
+                               focus:outline-none focus:ring-2 focus:ring-[#B8892B]/40">
+                    Batal
+                </button>
+
+                <button type="submit"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#8E2740] px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-[#7A1F36]
+                               focus:outline-none focus:ring-2 focus:ring-[#8E2740]/50 focus:ring-offset-2 focus:ring-offset-[#F4E4A6]">
+                    <x-icon name="trash" class="h-4 w-4" />
+                    Hapus Akun
+                </button>
             </div>
         </form>
     </x-modal>

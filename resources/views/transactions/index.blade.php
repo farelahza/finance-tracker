@@ -9,7 +9,7 @@
 
     $field = 'w-full rounded-xl border border-[#A8841F]
         bg-[#FBF1CC] text-[#2A210B]
-        text-sm px-3 py-2.5 shadow-sm
+        text-base sm:text-sm px-3 py-2.5 shadow-sm
         focus:border-[#B8892B] focus:ring-2 focus:ring-[#B8892B]/30 focus:outline-none transition';
 
     $btnPrimary = 'bg-gradient-to-b from-[#EBCB68] to-[#A67C1A] text-[#2A210B]
@@ -22,9 +22,6 @@
         hover:bg-[#E8D17F]
         focus:outline-none focus:ring-2 focus:ring-[#B8892B]/40';
 
-    $btnExcel = 'border border-[#176B50]/40 bg-[#176B50]/10
-        text-[#176B50] hover:bg-[#176B50]/20
-        focus:outline-none focus:ring-2 focus:ring-[#176B50]/40';
 
     $btnPdf = 'border border-[#8E2740]/40 bg-[#8E2740]/10
         text-[#8E2740] hover:bg-[#8E2740]/20
@@ -56,11 +53,6 @@
             </div>
 
             <div class="flex flex-col gap-3 sm:flex-row">
-
-                <a href="{{ route('transactions.export') }}"
-                   class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition {{ $btnExcel }}">
-                    <x-icon name="download" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Export Excel
-                </a>
 
                 <a href="{{ route('transactions.create') }}"
                    class="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-sm transition {{ $btnPrimary }}">
@@ -185,7 +177,7 @@
 
                     <div class="mt-4 grid grid-cols-2 gap-2">
                         <a href="{{ route('transactions.edit', $transaction->id) }}"
-                           class="inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition {{ $btnEdit }}">
+                           class="inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-semibold transition {{ $btnEdit }}">
                             <x-icon name="pencil" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Edit
                         </a>
 
@@ -195,7 +187,7 @@
 
                             <button type="submit"
                                     onclick="return confirm('Yakin ingin menghapus transaksi ini?')"
-                                    class="inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition {{ $btnPdf }}">
+                                    class="inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-semibold transition {{ $btnPdf }}">
                                 <x-icon name="trash" class="h-[1.15em] w-[1.15em] align-[-0.2em]" /> Hapus
                             </button>
                         </form>
