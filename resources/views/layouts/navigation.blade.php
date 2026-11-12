@@ -30,7 +30,7 @@ class="bg-gradient-to-r from-[#14213D] via-[#1B2B52] to-[#14213D] border-b borde
                                 <path d="M15 8h5v5" />
                             </svg>
                         </span>
-                        <span class="hidden lg:block font-['Playfair_Display',serif] text-lg font-semibold tracking-tight text-[#F0D27A]">
+                        <span class="block sm:hidden lg:block font-['Playfair_Display',serif] text-base sm:text-lg font-semibold tracking-tight text-[#F0D27A]">
                             Finance Tracker
                         </span>
                     </a>

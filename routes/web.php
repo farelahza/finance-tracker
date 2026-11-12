@@ -7,9 +7,7 @@ use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return auth()->check()
-        ? redirect()->route('dashboard')
-        : redirect()->route('login');
+    return view('welcome');
 });
 
 Route::middleware('auth')->group(function () {
@@ -53,6 +51,7 @@ Route::get(
         ->name('profile.edit');
 
     Route::patch('/profile', [ProfileController::class, 'update'])
+        ->middleware('throttle:10,1')
         ->name('profile.update');
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])

@@ -38,6 +38,8 @@
               preview: null,
               removed: false,
               currentUrl: @js($photoUrl),
+              email: @js(old('email', $user->email)),
+              originalEmail: @js($user->email),
               error: '',
               pick(e) {
                   const file = e.target.files[0];
@@ -59,6 +61,9 @@
               },
               get showImage() {
                   return this.preview !== null || (this.currentUrl !== null && !this.removed);
+              },
+              get emailChanged() {
+                  return this.email.trim() !== this.originalEmail;
               }
           }">
         @csrf
@@ -127,7 +132,7 @@
                 <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#7A6630]">
                     <x-icon name="mail" class="h-5 w-5" />
                 </span>
-                <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}"
+                <input id="email" name="email" type="email" x-model="email" value="{{ old('email', $user->email) }}"
                        required autocomplete="username" class="{{ $input('email') }}">
             </div>
             @error('email') <p class="{{ $errorText }}">{{ $message }}</p> @enderror
@@ -147,6 +152,23 @@
                     </p>
                 @endif
             @endif
+        </div>
+
+        {{-- Kata sandi saat ini: hanya muncul (dan hanya dikirim) bila email diubah --}}
+        <div x-show="emailChanged" x-transition
+             @if(old('email', $user->email) === $user->email) style="display:none" @endif>
+            <label for="email_confirm_password" class="{{ $label }}">Kata Sandi Saat Ini</label>
+            <div class="relative">
+                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#7A6630]">
+                    <x-icon name="lock" class="h-5 w-5" />
+                </span>
+                <input id="email_confirm_password" name="current_password" type="password"
+                       autocomplete="current-password" :disabled="!emailChanged"
+                       placeholder="Masukkan kata sandi untuk konfirmasi"
+                       class="{{ $input('current_password') }}">
+            </div>
+            <p class="mt-1.5 text-xs text-[#54421A]">Diperlukan saat mengubah email, demi keamanan akunmu.</p>
+            @error('current_password') <p class="{{ $errorText }}">{{ $message }}</p> @enderror
         </div>
 
         {{-- Tombol --}}

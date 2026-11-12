@@ -1,7 +1,8 @@
 <?php
 
-it('redirects guests to login from the homepage', function () {
+it('displays the welcome page on the homepage', function () {
     $response = $this->get('/');
 
-    $response->assertRedirect(route('login'));
+    $response->assertOk();
+    $response->assertViewIs('welcome');
 });

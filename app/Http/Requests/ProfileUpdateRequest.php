@@ -29,7 +29,22 @@ class ProfileUpdateRequest extends FormRequest
             // Foto profil: opsional, maksimal 2 MB, tipe dicek dari isi file
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'remove_photo' => ['nullable', 'boolean'],
+
+            // Kata sandi saat ini: WAJIB hanya ketika email diubah (mencegah pengambilalihan akun
+            // dari sesi login yang terbuka). Mengubah nama/foto tidak memerlukannya.
+            'current_password' => [
+                Rule::requiredIf(fn () => $this->isChangingEmail()),
+                'nullable',
+                'string',
+                'current_password',
+            ],
         ];
+    }
+
+    /** True bila email pada form berbeda dari email akun saat ini. */
+    private function isChangingEmail(): bool
+    {
+        return (string) $this->input('email') !== (string) $this->user()->email;
     }
 
     /**
@@ -48,6 +63,8 @@ class ProfileUpdateRequest extends FormRequest
             'photo.mimes'      => 'Format foto harus JPG, PNG, atau WebP.',
             'photo.max'        => 'Ukuran foto maksimal 2 MB.',
             'photo.uploaded'   => 'Foto gagal diunggah. Pastikan ukurannya tidak lebih dari 2 MB.',
+            'current_password.required'         => 'Masukkan kata sandi saat ini untuk mengubah email.',
+            'current_password.current_password' => 'Kata sandi saat ini salah.',
         ];
     }
 }
